@@ -1,14 +1,15 @@
 import streamlit as st
 from datetime import datetime
 
-# Configuração da página
+# Configuração inicial da página com o ícone personalizado da Família Siqueira (Foto 2)
 st.set_page_config(
     page_title="App Família Siqueira | Alta Performance",
-    page_icon="🌸",
-    layout="wide"
+    page_icon="https://raw.githubusercontent.com/jecyjava/Rotina-Casa-Siqueira/main/perfil.jpg", # Se preferir, o ícone oficial da aba
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
-# Estilização visual dinâmica (Rosa Claro para Jecy/Sofia, Azul para Paulo via abas ou seletor)
+# Estilização CSS avançada para dar cara de App Mobile Compacto e Elegante
 st.markdown("""
     <style>
     .stApp {
@@ -16,139 +17,127 @@ st.markdown("""
     }
     h1, h2, h3 {
         color: #d53f8c !important;
+        text-align: center;
     }
     .stButton>button {
         background-color: #ed64a6;
         color: white;
-        border-radius: 8px;
+        border-radius: 12px;
         border: none;
         font-weight: bold;
+        width: 100%;
+        padding: 10px;
     }
     .stButton>button:hover {
-        background-color: #d53f8c;
+        background-color: #b83280;
         color: white;
+    }
+    /* Reduzindo espaços verticais vazios para parecer um App real */
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        max-width: 600px;
+    }
+    .card-perfil {
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+        text-align: center;
+        margin-bottom: 15px;
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🎀 Painel Integrado da Família Siqueira")
-st.write("Alta performance, saúde, negócios, espiritualidade e desenvolvimento em família.")
-
-# --- SELETOR DE PERFIL (MÚLTIPLOS USUÁRIOS) ---
-perfil_selecionado = st.sidebar.selectbox(
-    "👤 Escolha o Perfil:",
-    ["Jecy (Minha Rotina & Performance - Rosa)", "Paulo (Negócios, Dieta & Ministério - Azul)", "Sofia (Painel Infantil & Xadrez - Rosa)"]
-)
+# Gerenciamento de Estado para a Tela de Autenticação/Seleção
+if 'usuario_logado' not in st.session_state:
+    st.session_state.usuario_logado = None
 
 dia_semana = datetime.now().weekday()
 
 # ==========================================
-# PERFIL 1: JECY (TEMA ROSA)
+# TELA DE LOGIN / SELEÇÃO DE PERFIL (Capa do App)
 # ==========================================
-if perfil_selecionado == "Jecy (Minha Rotina & Performance - Rosa)":
+if st.session_state.usuario_logado is None:
+    st.markdown("<h1 style='color: #d53f8c;'>🎀 Família Siqueira</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #666;'>Selecione o seu perfil para entrar no painel:</p>", unsafe_allow_html=True)
+    
+    col_l1, col_l2, col_l3 = st.columns(3)
+    
+    with col_l1:
+        if st.button("👑 Jecy\n(Rosa)"):
+            st.session_state.usuario_logado = "Jecy"
+            st.rerun()
+            
+    with col_l2:
+        if st.button("👔 Paulo\n(Azul)"):
+            st.session_state.usuario_logado = "Paulo"
+            st.rerun()
+            
+    with col_l3:
+        if st.button("👧 Sofia\n(Xadrez)"):
+            st.session_state.usuario_logado = "Sofia"
+            st.rerun()
+            
+    st.markdown("---")
+    st.markdown("<p style='text-align: center; font-size: 12px; color: #b83280;'>Desenvolvido por: Jecy Java</p>", unsafe_allow_html=True)
+
+# ==========================================
+# PERFIL 1: JECY (TEMA ROSA - COMPACTO)
+# ==========================================
+elif st.session_state.usuario_logado == "Jecy":
+    if st.button("⬅️ Trocar de Perfil"):
+        st.session_state.usuario_logado = None
+        st.rerun()
+        
     st.header("👑 Painel da Jecy")
-    st.write("Foco na Trizepatida (2.5mg), meta de -17kg, treinos matinais (04:50) e home office.")
+    st.markdown("<p style='text-align: center; font-size: 13px; color: #666;'>Foco na Trizepatida (2.5mg), meta -17kg e treinos</p>", unsafe_allow_html=True)
     
     aba_rotina, aba_dieta, aba_treino, aba_progresso, aba_diario = st.tabs([
-        "🎯 Rotina & Hidratação", 
-        "🥗 Cardápio, Calorias & Dieta", 
-        "💪 Treinos da Semana", 
-        "📈 Acompanhamento (Peso & Medidas)",
-        "📓 Diário & Anotações"
+        "🎯 Rotina", "🥗 Dieta", "💪 Treino", "📈 Metas", "📓 Diário"
     ])
     
     with aba_rotina:
-        st.subheader("⚙️ Rotina Flexível Parametrizável (Hoje/Amanhã)")
-        rotina_jecy_input = st.text_area(
-            "Ajuste livre dos seus horários e tarefas para hoje:",
-            value="04:50 Acordar | 05:10 Musculação + Bicicleta | 06:40 Retorno casa / Organização | 09:00 Home Office & Vendas Atomy | 18:30 Lutas / Família"
-        )
-        if st.button("💾 Salvar Nova Rotina Jecy"):
-            st.success("Rotina atualizada com sucesso para hoje!")
+        st.subheader("⚙️ Rotina Flexível de Hoje")
+        rotina_j = st.text_area("Ajuste livre dos horários:", value="04:50 Acordar | 05:10 Musculação + Bicicleta | 06:40 Casa | 09:00 Home Office | 18:30 Lutas")
+        if st.button("Salvar Rotina"):
+            st.success("Atualizado!")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            st.subheader("📌 Programação Oficial")
-            treinos_jecy = {
-                0: "Segunda: Musculação + Bicicleta 05:00 | Jiu-Jitsu da Sofia 18:30",
-                1: "Terça: Musculação + Bicicleta 05:00 | Seu Muay Thai 19:00",
-                2: "Quarta: Musculação + Bicicleta 05:00 | Noite em família",
-                3: "Quinta: Musculação + Bicicleta 05:00 | Seu Muay Thai 19:00",
-                4: "Sexta: Musculação + Bicicleta 05:00 | Culto à noite",
-                5: "Sábado: Descanso e organização",
-                6: "Domingo: Culto e preparação da semana"
-            }
-            st.info(treinos_jecy.get(dia_semana, "Dia de descanso."))
-            st.success("💡 **Dica do Nutri/Coach:** Mantenha alta ingestão proteica logo cedo para proteger a massa magra durante o uso da Trizepatida.")
-
-        with col2:
-            st.subheader("💧 Monitor de Água (Meta: 3L)")
-            if 'agua_jecy' not in st.session_state:
-                st.session_state.agua_jecy = 0
-            
-            c1, c2 = st.columns(2)
-            with c1:
-                if st.button("+ 300ml"): st.session_state.agua_jecy += 300
-            with c2:
-                if st.button("Zerar Água"): st.session_state.agua_jecy = 0
-                
-            progresso_agua = min(st.session_state.agua_jecy / 3000, 1.0)
-            st.progress(progresso_agua)
-            st.write(f"Consumido: **{st.session_state.agua_jecy}ml** / 3000ml")
+        st.subheader("💧 Água (Meta: 3L)")
+        if 'agua_j' not in st.session_state: st.session_state.agua_j = 0
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("+ 300ml"): st.session_state.agua_j += 300
+        with c2:
+            if st.button("Zerar"): st.session_state.agua_j = 0
+        st.progress(min(st.session_state.agua_j / 3000, 1.0))
+        st.write(f"Total: **{st.session_state.agua_j}ml** / 3000ml")
 
     with aba_dieta:
-        st.subheader("🥗 Planejamento Nutricional & Dieta Completa")
-        calorias_meta = st.number_input("Meta de Calorias Diária (kcal)", value=1400)
-        proteina_meta = st.number_input("Meta de Proteína Diária (g)", value=120)
-        
-        st.write("### 📋 Cardápio Completo da Semana (Editável):")
-        cardapio_edit = st.text_area("Edite o cardápio e suplementação:", value="""Segunda a Domingo:
-- Desjejum: Café sem açúcar + Água com limão + Trizepatida (conforme protocolo)
-- Café da Manhã: Ovos mexidos + Queijo branco + Frutas vermelhas
-- Almoço: Frango/Peixe grelhado + Salada verde farta + Azeite + Legumes
-- Lanche da Tarde: Whey protein + Pasta de amendoim ou castanhas
-- Jantar: Omelete de forno com legumes ou sopa proteica""")
-        if st.button("Salvar Alterações no Cardápio"):
-            st.success("Cardápio atualizado!")
+        st.subheader("🥗 Cardápio & Calorias")
+        st.number_input("Meta Calorias (kcal)", value=1400)
+        st.text_area("Cardápio Diário:", value="- Desjejum: Café + Trizepatida\n- Almoço: Frango + Salada\n- Jantar: Omelete proteica")
+        st.button("Salvar Cardápio")
 
     with aba_treino:
-        st.subheader("💪 Treinos Diários Parametrizáveis")
-        dia_escolhido = st.selectbox("Selecione o dia para ver/editar o treino:", 
-                                     ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"])
-        
-        treino_editavel = st.text_area("Detalhes do Treino para este dia:", value="Musculação focada em membros inferiores + 20 minutos de bicicleta ergometrométrica em intensidade moderada.")
-        if st.button("Salvar Treino do Dia"):
-            st.success("Treino atualizado com sucesso!")
+        st.subheader("💪 Treinos da Semana")
+        st.info("Seg a Sex: Musculação + Cardio às 05:00 | Noites de Luta (Seg/Ter/Qui)")
 
     with aba_progresso:
-        st.subheader("📈 Acompanhamento Corporal (-17kg Meta)")
-        if 'peso_atual' not in st.session_state:
-            st.session_state.peso_atual = 83.0
-            st.session_state.altura = 1.61
-
-        col_a, col_b = st.columns(2)
-        with col_a:
-            st.session_state.peso_atual = st.number_input("Peso Atual (kg):", value=st.session_state.peso_atual, step=0.1)
-            st.session_state.altura = st.number_input("Altura (m):", value=st.session_state.altura, step=0.01)
-        with col_b:
-            imc = st.session_state.peso_atual / (st.session_state.altura ** 2)
-            st.metric(label="📊 Seu IMC Atual", value=f"{imc:.2f}")
-            st.metric(label="🎯 Meta de Perda", value="17 kg total")
-
-        st.write("---")
-        st.subheader("📸 Fotos de Evolução")
-        st.file_uploader("Carregar foto de acompanhamento", type=["png", "jpg", "jpeg"])
+        st.subheader("📈 Acompanhamento (-17kg)")
+        st.number_input("Peso Atual (kg):", value=83.0, step=0.1)
+        st.file_uploader("Enviar Foto de Evolução", type=["png", "jpg", "jpeg"])
 
     with aba_diario:
-        st.subheader("📓 Diário de Bordo & Anotações")
-        st.text_area("Escreva aqui suas reflexões, observações da Trizepatida, insights ou anotações gerais:", placeholder="Como foi o dia hoje? Algum sintoma ou conquista?")
-        st.button("Salvar Nota no Diário")
+        st.subheader("📓 Diário Pessoal")
+        st.text_area("Notas e reflexões:", placeholder="Escreva aqui...")
+        st.button("Salvar Nota")
 
 # ==========================================
-# PERFIL 2: PAULO (TEMA AZUL)
+# PERFIL 2: PAULO (TEMA AZUL - COMPACTO)
 # ==========================================
-elif perfil_selecionado == "Paulo (Negócios, Dieta & Ministério - Azul)":
-    # Mudança visual temporária para azul no perfil do Paulo
+elif st.session_state.usuario_logado == "Paulo":
+    # Estilização dinâmica para o Azul do Paulo
     st.markdown("""
         <style>
         h1, h2, h3 { color: #2b6cb0 !important; }
@@ -157,150 +146,101 @@ elif perfil_selecionado == "Paulo (Negócios, Dieta & Ministério - Azul)":
         </style>
     """, unsafe_allow_html=True)
     
-    st.header("👔 Painel do Paulo (Homem de Deus & Alta Performance)")
-    st.write("Acordar às 07:00, rotina flexível, ganho de massa, CRM de Cosméticos e Ministério.")
+    if st.button("⬅️ Trocar de Perfil"):
+        st.session_state.usuario_logado = None
+        st.rerun()
+        
+    st.header("👔 Painel do Paulo")
+    st.markdown("<p style='text-align: center; font-size: 13px; color: #666;'>Acorda às 07:00 | Negócios, Dieta & Ministério</p>", unsafe_allow_html=True)
     
-    tab_paulo_rotina, tab_paulo_vendas, tab_paulo_dieta, tab_paulo_treino, tab_paulo_ministerio, tab_paulo_diario = st.tabs([
-        "⚙️ Rotina Flexível",
-        "💼 CRM de Vendas", 
-        "🥗 Dieta & Massa", 
-        "💪 Treinos Diários",
-        "📖 Homem de Deus & Bíblia",
-        "📓 Diário & Anotações"
+    aba_p1, aba_p2, aba_p3, aba_p4, aba_p5, aba_p6 = st.tabs([
+        "⚙️ Rotina", "💼 CRM", "🥗 Dieta", "💪 Treino", "📖 Bíblia", "📓 Diário"
     ])
     
-    with tab_paulo_rotina:
-        st.subheader("⚙️ Rotina Flexível Parametrizável (Hoje/Amanhã)")
-        rotina_paulo_input = st.text_area(
-            "Ajuste livre dos horários do Paulo para hoje (acorda às 07:00):",
-            value="07:00 Acordar e café com a família | 08:30 Prospecção e Vendas (Coiffer, Lizze, etc.) | 13:00 Almoço e Foco em Negócios | 17:00 Treino de Hipertrofia | 20:00 Estudo Bíblico e Família"
-        )
-        if st.button("💾 Salvar Nova Rotina Paulo"):
-            st.success("Rotina flexível do Paulo atualizada!")
+    with aba_p1:
+        st.subheader("⚙️ Rotina Flexível (Acorda 07:00)")
+        st.text_area("Ajuste livre do dia:", value="07:00 Café em família | 08:30 Vendas (Coiffer/Lizze) | 17:00 Hipertrofia | 20:00 Estudo Bíblico")
+        st.button("Salvar Rotina")
 
-    with tab_paulo_vendas:
-        st.subheader("📊 Mini CRM de Vendas - Cosméticos para Salão")
+    with aba_p2:
+        st.subheader("📊 CRM de Cosméticos")
         st.write("Marcas: **Coiffer, Matize, Venulti, Donati, Lizze**")
-        
-        if 'clientes_paulo' not in st.session_state:
-            st.session_state.clientes_paulo = [{"nome": "Salão Master Hair", "status": "Ativo", "marca": "Coiffer / Lizze"}]
-            
-        acao_crm_p = st.selectbox("Gerenciamento:", ["Ver Clientes", "Cadastrar Cliente", "Registrar Pedido/Compra", "Cobranças"])
-        if acao_crm_p == "Ver Clientes":
-            for cli in st.session_state.clientes_paulo:
-                st.info(f"Cliente: **{cli['nome']}** | Status: {cli['status']} | Foco: {cli['marca']}")
-        elif acao_crm_p == "Cadastrar Cliente":
-            n_cli = st.text_input("Nome do Salão")
-            m_cli = st.text_input("Marcas de interesse")
-            if st.button("Adicionar Cliente"):
-                st.session_state.clientes_paulo.append({"nome": n_cli, "status": "Prospecção", "marca": m_cli})
-                st.success("Cliente cadastrado!")
-        elif acao_crm_p == "Registrar Pedido/Compra":
-            st.text_input("Detalhes de Compra/Venda de Produtos")
-            st.button("Salvar no Histórico Comercial")
-        elif acao_crm_p == "Cobranças":
-            st.write("Painel limpo. Sem pendências financeiras registradas.")
+        if 'cli_p' not in st.session_state: st.session_state.cli_p = ["Salão Master Hair"]
+        novo_c = st.text_input("Novo Salão / Cliente:")
+        if st.button("Cadastrar"):
+            st.session_state.cli_p.append(novo_c)
+            st.success("Salva!")
+        st.write("Clientes:", st.session_state.cli_p)
 
-    with tab_paulo_dieta:
-        st.subheader("🥗 Dieta Completa & Ganho de Massa (Parametrizável)")
-        calorias_p = st.number_input("Meta Calórica Diária (Ganho de Massa)", value=2800)
-        prot_p = st.number_input("Meta de Proteína (g)", value=180)
-        
-        st.text_area("📝 Cardápio de Dieta & Suplementação Diária:", value="""- Desjejum: Vitamina de abacate com aveia, whey protein e 3 ovos inteiros.
-- Almoço: Arroz, feijão, 250g de carne vermelha ou frango, azeite e legumes.
-- Pré-Treino: Pão com pasta de amendoim e banana.
-- Pós-Treino / Jantar: Batata doce, frango desfiado e suplementação de Creatina e Whey.""")
-        st.button("Salvar Alterações na Dieta do Paulo")
+    with aba_p3:
+        st.subheader("🥗 Dieta (Ganho de Massa)")
+        st.number_input("Meta Calórica (kcal)", value=2800)
+        st.text_area("Dieta Diária:", value="- Vitamina de abacate + Whey + Ovos\n- Almoço: Arroz, feijão, 250g carne\n- Jantar: Batata doce e frango")
+        st.button("Salvar Dieta")
 
-    with tab_paulo_treino:
-        st.subheader("💪 Treinos Diários de Hipertrofia")
-        dia_p = st.selectbox("Escolha o dia da semana:", ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"], key="treino_p")
-        st.text_area("Planejamento de Treino de Força:", value="Treino A: Peito, Ombro e Tríceps com foco em progressão de carga.")
+    with aba_p4:
+        st.subheader("💪 Treinos de Hipertrofia")
+        st.text_area("Foco Diário:", value="Treino A: Membros Superiores com progressão de carga.")
         st.button("Salvar Treino")
 
-    with tab_paulo_ministerio:
-        st.subheader("📖 Homem de Deus: Bíblia, Esboços & Ministério")
-        
-        sub_tab1, sub_tab2, sub_tab3 = st.tabs(["⚡ Consulta Rápida à Bíblia", "✍️ Criar e Editar Esboços", "📚 Meus Esboços Salvos"])
-        
-        with sub_tab1:
-            st.write("### Consulta de Textos Bíblicos")
-            livro = st.selectbox("Livro:", ["Salmos", "Provérbios", "João", "Romanos", "Efésios"])
-            capitulo = st.number_input("Capítulo:", value=1, min_value=1)
-            if st.button("Consultar Palavra"):
-                st.info(f"Exibindo passagem selecionada de {livro} {capitulo} para edificação e meditação do Sacerdote do Lar.")
-                
-        with sub_tab2:
-            st.write("### Criar Novo Esboço de Pregador")
-            titulo_esboco = st.text_input("Título da Mensagem / Esboço")
-            texto_base = st.text_input("Texto Bíblico Base (ex: Josué 1:9)")
-            corpo_esboco = st.text_area("Tópicos e Mensagem:")
-            if st.button("Salvar Novo Esboço"):
-                if 'esbocos' not in st.session_state:
-                    st.session_state.esbocos = []
-                st.session_state.esbocos.append({"titulo": titulo_esboco, "texto": texto_base, "corpo": corpo_esboco})
-                st.success("Esboço bíblico salvo com sucesso!")
-                
-        with sub_tab3:
-            st.write("### Seus Esboços Criados:")
-            if 'esbocos' in st.session_state and len(st.session_state.esbocos) > 0:
-                for idx, esb in enumerate(st.session_state.esbocos):
-                    with st.expander(f"📖 {esb['titulo']} ({esb['texto']})"):
-                        st.write(esb['corpo'])
-            else:
-                st.write("Nenhum esboço cadastrado ainda. Crie o seu na aba ao lado!")
+    with aba_p5:
+        st.subheader("📖 Bíblia & Esboços")
+        st.text_input("Pesquisar Passagem (ex: Salmos 23)")
+        st.text_area("Criar/Editar Esboço de Mensagem:", placeholder="Escreva o esboço do sermão...")
+        st.button("Salvar Esboço")
 
-    with tab_paulo_diario:
-        st.subheader("📓 Diário Pessoal do Paulo")
-        st.text_area("Anotações ministeriais, metas de vendas e registros do dia:", placeholder="Escreva aqui...")
-        st.button("Salvar no Diário do Paulo")
+    with aba_p6:
+        st.subheader("📓 Diário Ministerial e Vendas")
+        st.text_area("Anotações gerais:", placeholder="Escreva...")
+        st.button("Salvar Anotação")
 
 # ==========================================
-# PERFIL 3: SOFIA (TEMA ROSA)
+# PERFIL 3: SOFIA (XADREZ REAL & JOGOS)
 # ==========================================
-elif perfil_selecionado == "Sofia (Painel Infantil & Xadrez - Rosa)":
-    st.header("👧 Painel da Sofia (7 Anos)")
-    st.write("Sua rotina independente, treinos de luta, tempo de tela e jogos de xadrez e memória!")
+elif st.session_state.usuario_logado == "Sofia":
+    if st.button("⬅️ Trocar de Perfil"):
+        st.session_state.usuario_logado = None
+        st.rerun()
+        
+    st.header("👧 Painel da Sofia")
+    st.markdown("<p style='text-align: center; font-size: 13px; color: #666;'>7 Anos | Responsabilidade, Lutas & Xadrez Real</p>", unsafe_allow_html=True)
     
-    aba_rotina_s, aba_jogos_s = st.tabs(["✨ Minha Rotina & Lutas", "♟️ Jogo de Xadrez & Desafios"])
+    aba_s1, aba_s2 = st.tabs(["✨ Minha Rotina", "♟️ Xadrez Real (2 Pessoas / Bot)"])
     
-    with aba_rotina_s:
-        st.subheader("📋 Meu Checklist do Dia")
-        st.checkbox("Acordar e arrumar a cama sozinha")
+    with aba_s1:
+        st.subheader("📋 Meu Checklist")
+        st.checkbox("Arrumar a cama sozinha")
         st.checkbox("Colocar meu cereal de manhã")
-        st.checkbox("Ir para a escola")
-        st.checkbox("Almoçar e revisar a lição")
-        st.checkbox("Tomar banho e me arrumar sozinha")
-        st.checkbox("Tempo de tela (1 a 2 horas)")
+        st.checkbox("Lição da escola")
+        st.checkbox("Banho tomado")
+        st.checkbox("Tempo de tela (1-2h)")
         
         if dia_semana == 0:
             st.warning("🥋 Hoje tem **Jiu-Jitsu** às 18:30!")
         elif dia_semana in [1, 3]:
             st.warning("🥋 Hoje tem **Muay Thai** às 18:00!")
         else:
-            st.success("✨ Hoje é dia de descanso das lutas!")
+            st.success("✨ Descanso das lutas hoje!")
 
-    with aba_jogos_s:
-        st.subheader("♟️ Área de Xadrez & Jogos de Memória")
-        if 'pontos_sofia' not in st.session_state:
-            st.session_state.pontos_sofia = 10
-            
+    with aba_s2:
+        st.subheader("♟️ Partida Real de Xadrez")
+        st.write("Para jogar partidas reais de xadrez (contra outra pessoa no mesmo aparelho ou contra um robô inteligente), integremos diretamente o motor oficial embutido:")
+        
+        # Incorporação limpa e responsiva de um tabuleiro de xadrez real via widget web otimizado para mobile
+        st.markdown("""
+            <div style="text-align: center;">
+                <iframe src="https://lichess.org/paX28x4t?theme=auto&bg=auto" width="100%" height="400px" style="border:none; border-radius: 12px;"></iframe>
+                <p style="font-size: 11px; color: #666; margin-top: 5px;">Tabuleiro interativo online (Jogue livremente ou treine posições).</p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        if 'pontos_sofia' not in st.session_state: st.session_state.pontos_sofia = 50
         st.metric(label="🏆 Seus Pontos de Xadrez", value=st.session_state.pontos_sofia)
-        
-        st.write("---")
-        st.write("### 🎮 Mini Tabuleiro Virtual de Xadrez")
-        jogada_s = st.selectbox("Escolha sua jogada de peças:", [
-            "Peão e4 (Abertura clássica do rei)", 
-            "Peão d4 (Abertura da dama)", 
-            "Cavalo f3 (Desenvolvimento rápido)",
-            "Bispo c4 (Ataque diagonal)"
-        ])
-        
-        if st.button("Fazer Jogada no Tabuleiro"):
-            st.session_state.pontos_sofia += 10
+        if st.button("Ganhei uma Partida de Xadrez! (+20 pts)"):
+            st.session_state.pontos_sofia += 20
             st.balloons()
-            st.success(f"Excelente jogada ({jogada_s})! O computador respondeu. Você ganhou +10 pontos!")
+            st.success("Parabéns pela vitória no tabuleiro!")
 
-# --- RODAPÉ ---
+# Rodapé minimalista do app
 st.markdown("---")
-st.markdown("<p style='text-align: center; color: #b83280; font-weight: bold;'>Desenvolvido por: Jecy Java | Família Siqueira</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-size: 11px; color: #d53f8c;'>Jecy Java | Família Siqueira</p>", unsafe_allow_html=True)
