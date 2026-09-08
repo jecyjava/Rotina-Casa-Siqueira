@@ -3,7 +3,7 @@ from datetime import datetime
 import pandas as pd
 import io
 
-# Configuração da página com o ícone personalizado da Família Siqueira (Foto 2)
+# Configuração da página com o ícone personalizado da Família Siqueira
 st.set_page_config(
     page_title="App Família Siqueira | Alta Performance",
     page_icon="https://raw.githubusercontent.com/jecyjava/Rotina-Casa-Siqueira/main/perfil.jpg",
@@ -165,7 +165,6 @@ elif st.session_state.usuario_logado == "Paulo":
         st.subheader("💼 Gestão de Vendas & CRM (Cosméticos)")
         st.write("Marcas: **Coiffer, Matize, Venulti, Donati, Lizze**")
         
-        # Inicializando dados comerciais na sessão
         if 'produtos_vendas' not in st.session_state:
             st.session_state.produtos_vendas = [
                 {"Produto": "Shampoo Matizador Coiffer 1L", "Preço (R$)": 120.0, "Estoque": 15},
@@ -219,7 +218,6 @@ elif st.session_state.usuario_logado == "Paulo":
             qtd_pedido = st.number_input("Quantidade:", value=1, min_value=1)
             
             if st.button("📥 Gerar Planilha Excel do Pedido"):
-                # Gerando Excel em memória usando pandas
                 dados_pedido = {"Cliente": [cliente_pedido], "Produto": [produto_pedido], "Quantidade": [qtd_pedido], "Data": [datetime.now().strftime("%d/%m/%Y")]}
                 df_pedido = pd.DataFrame(dados_pedido)
                 
@@ -327,7 +325,7 @@ elif st.session_state.usuario_logado == "Sofia":
     st.header("👧 Painel da Sofia")
     st.markdown("<p style='text-align: center; font-size: 13px; color: #666;'>7 Anos | Responsabilidade, Lutas & Xadrez Real</p>", unsafe_allow_html=True)
     
-    aba_s1, aba_s2 = st.tabs(["✨ Minha Rotina", "♟️ Xadrez Real (2 Pessoas / Bot)"])
+    aba_s1, aba_s2 = st.tabs(["✨ Minha Rotina", "♟️ Xadrez Real (Lichess)"])
     
     with aba_s1:
         st.subheader("📋 Meu Checklist")
@@ -346,13 +344,14 @@ elif st.session_state.usuario_logado == "Sofia":
 
     with aba_s2:
         st.subheader("♟️ Partida Real de Xadrez")
-        st.write("Tabuleiro interativo embutido para partidas reais (contra outra pessoa ou contra o robô):")
+        st.write("Jogue partidas reais contra o bot ou outra pessoa diretamente na plataforma oficial do Lichess:")
         
-        # Incorporação ativa e garantida do tabuleiro de xadrez real
+        # Botão interativo com link externo seguro que evita bloqueio do navegador/iframe
         st.markdown("""
-            <div style="text-align: center;">
-                <iframe src="https://lichess.org/paX28x4t?theme=auto&bg=auto" width="100%" height="450px" style="border:none; border-radius: 12px;"></iframe>
-                <p style="font-size: 11px; color: #666; margin-top: 8px;">Tabuleiro carregado com sucesso (Jogue livremente ou contra o bot).</p>
+            <div style="text-align: center; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 15px;">
+                <h3 style="color: #d53f8c; margin-bottom: 10px;">♟️ Tabuleiro Oficial Lichess</h3>
+                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Clique abaixo para abrir o jogo em tela cheia e treinar suas estratégias:</p>
+                <a href="https://lichess.org/" target="_blank" style="background-color: #ed64a6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Abrir Jogo de Xadrez 🚀</a>
             </div>
         """, unsafe_allow_html=True)
         
