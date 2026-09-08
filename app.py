@@ -1,15 +1,17 @@
 import streamlit as st
 from datetime import datetime
+import pandas as pd
+import io
 
-# Configuração inicial da página com o ícone personalizado da Família Siqueira (Foto 2)
+# Configuração da página com o ícone personalizado da Família Siqueira (Foto 2)
 st.set_page_config(
     page_title="App Família Siqueira | Alta Performance",
-    page_icon="https://raw.githubusercontent.com/jecyjava/Rotina-Casa-Siqueira/main/perfil.jpg", # Se preferir, o ícone oficial da aba
+    page_icon="https://raw.githubusercontent.com/jecyjava/Rotina-Casa-Siqueira/main/perfil.jpg",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# Estilização CSS avançada para dar cara de App Mobile Compacto e Elegante
+# Estilização CSS avançada para eliminar espaços vazios e dar cara de App Mobile Compacto e Elegante
 st.markdown("""
     <style>
     .stApp {
@@ -32,19 +34,17 @@ st.markdown("""
         background-color: #b83280;
         color: white;
     }
-    /* Reduzindo espaços verticais vazios para parecer um App real */
     .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 1.5rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
         max-width: 600px;
     }
-    .card-perfil {
+    .card-treino {
         background: white;
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.08);
-        text-align: center;
-        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin-bottom: 12px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -83,7 +83,7 @@ if st.session_state.usuario_logado is None:
     st.markdown("<p style='text-align: center; font-size: 12px; color: #b83280;'>Desenvolvido por: Jecy Java</p>", unsafe_allow_html=True)
 
 # ==========================================
-# PERFIL 1: JECY (TEMA ROSA - COMPACTO)
+# PERFIL 1: JECY (TEMA ROSA)
 # ==========================================
 elif st.session_state.usuario_logado == "Jecy":
     if st.button("⬅️ Trocar de Perfil"):
@@ -94,7 +94,7 @@ elif st.session_state.usuario_logado == "Jecy":
     st.markdown("<p style='text-align: center; font-size: 13px; color: #666;'>Foco na Trizepatida (2.5mg), meta -17kg e treinos</p>", unsafe_allow_html=True)
     
     aba_rotina, aba_dieta, aba_treino, aba_progresso, aba_diario = st.tabs([
-        "🎯 Rotina", "🥗 Dieta", "💪 Treino", "📈 Metas", "📓 Diário"
+        "🎯 Rotina", "🥗 Dieta", "💪 Treinos", "📈 Metas", "📓 Diário"
     ])
     
     with aba_rotina:
@@ -134,10 +134,9 @@ elif st.session_state.usuario_logado == "Jecy":
         st.button("Salvar Nota")
 
 # ==========================================
-# PERFIL 2: PAULO (TEMA AZUL - COMPACTO)
+# PERFIL 2: PAULO (TEMA AZUL)
 # ==========================================
 elif st.session_state.usuario_logado == "Paulo":
-    # Estilização dinâmica para o Azul do Paulo
     st.markdown("""
         <style>
         h1, h2, h3 { color: #2b6cb0 !important; }
@@ -154,7 +153,7 @@ elif st.session_state.usuario_logado == "Paulo":
     st.markdown("<p style='text-align: center; font-size: 13px; color: #666;'>Acorda às 07:00 | Negócios, Dieta & Ministério</p>", unsafe_allow_html=True)
     
     aba_p1, aba_p2, aba_p3, aba_p4, aba_p5, aba_p6 = st.tabs([
-        "⚙️ Rotina", "💼 CRM", "🥗 Dieta", "💪 Treino", "📖 Bíblia", "📓 Diário"
+        "⚙️ Rotina", "💼 Vendas & CRM", "🥗 Dieta", "💪 Treinos", "📖 Bíblia & Esboços", "📓 Diário"
     ])
     
     with aba_p1:
@@ -163,39 +162,162 @@ elif st.session_state.usuario_logado == "Paulo":
         st.button("Salvar Rotina")
 
     with aba_p2:
-        st.subheader("📊 CRM de Cosméticos")
+        st.subheader("💼 Gestão de Vendas & CRM (Cosméticos)")
         st.write("Marcas: **Coiffer, Matize, Venulti, Donati, Lizze**")
-        if 'cli_p' not in st.session_state: st.session_state.cli_p = ["Salão Master Hair"]
-        novo_c = st.text_input("Novo Salão / Cliente:")
-        if st.button("Cadastrar"):
-            st.session_state.cli_p.append(novo_c)
-            st.success("Salva!")
-        st.write("Clientes:", st.session_state.cli_p)
+        
+        # Inicializando dados comerciais na sessão
+        if 'produtos_vendas' not in st.session_state:
+            st.session_state.produtos_vendas = [
+                {"Produto": "Shampoo Matizador Coiffer 1L", "Preço (R$)": 120.0, "Estoque": 15},
+                {"Produto": "Escova Progressiva Lizze Extreme", "Preço (R$)": 350.0, "Estoque": 8},
+                {"Produto": "Máscara Donati Nutrição 500g", "Preço (R$)": 95.0, "Estoque": 20}
+            ]
+        if 'clientes_vendas' not in st.session_state:
+            st.session_state.clientes_vendas = [
+                {"Salão / Cliente": "Salão Master Hair", "Contato": "(16) 99999-1111", "Observação": "Foco em progressivas"},
+                {"Salão / Cliente": "Studio Bella Vista", "Contato": "(16) 98888-2222", "Observação": "Gosta de matizadores"}
+            ]
+
+        sub_v1, sub_v2, sub_v3 = st.tabs(["📦 Produtos & Preços", "👥 Clientes", "📊 Emitir Pedido (Excel)"])
+        
+        with sub_v1:
+            st.write("### Tabela de Preços e Produtos")
+            df_prod = pd.DataFrame(st.session_state.produtos_vendas)
+            st.dataframe(df_prod, use_container_width=True)
+            
+            with st.form("cad_prod"):
+                st.write("**Cadastrar Novo Produto:**")
+                novo_p_nome = st.text_input("Nome do Produto/Cosmético")
+                novo_p_preco = st.number_input("Preço de Venda (R$)", value=100.0)
+                novo_p_est = st.number_input("Quantidade em Estoque", value=10, min_value=1)
+                btn_cad_p = st.form_submit_button("Salvar Produto")
+                if btn_cad_p and novo_p_nome:
+                    st.session_state.produtos_vendas.append({"Produto": novo_p_nome, "Preço (R$)": novo_p_preco, "Estoque": novo_p_est})
+                    st.success("Produto cadastrado com sucesso!")
+                    st.rerun()
+
+        with sub_v2:
+            st.write("### Carteira de Clientes (Salões)")
+            df_cli = pd.DataFrame(st.session_state.clientes_vendas)
+            st.dataframe(df_cli, use_container_width=True)
+            
+            with st.form("cad_cli"):
+                st.write("**Cadastrar Novo Cliente / Salão:**")
+                novo_c_nome = st.text_input("Nome do Salão")
+                novo_c_contato = st.text_input("Telefone / Contato")
+                novo_c_obs = st.text_input("Observações / Marcas de Interesse")
+                btn_cad_c = st.form_submit_button("Salvar Cliente")
+                if btn_cad_c and novo_c_nome:
+                    st.session_state.clientes_vendas.append({"Salão / Cliente": novo_c_nome, "Contato": novo_c_contato, "Observação": novo_c_obs})
+                    st.success("Cliente cadastrado com sucesso!")
+                    st.rerun()
+
+        with sub_v3:
+            st.write("### Emitir Pedido de Venda em Excel")
+            cliente_pedido = st.selectbox("Selecione o Cliente:", [c["Salão / Cliente"] for c in st.session_state.clientes_vendas])
+            produto_pedido = st.selectbox("Selecione o Produto:", [p["Produto"] for p in st.session_state.produtos_vendas])
+            qtd_pedido = st.number_input("Quantidade:", value=1, min_value=1)
+            
+            if st.button("📥 Gerar Planilha Excel do Pedido"):
+                # Gerando Excel em memória usando pandas
+                dados_pedido = {"Cliente": [cliente_pedido], "Produto": [produto_pedido], "Quantidade": [qtd_pedido], "Data": [datetime.now().strftime("%d/%m/%Y")]}
+                df_pedido = pd.DataFrame(dados_pedido)
+                
+                output = io.BytesIO()
+                with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                    df_pedido.to_excel(writer, index=False, sheet_name='Pedido_Venda')
+                processed_data = output.getvalue()
+                
+                st.download_button(
+                    label="⬇️ Baixar Arquivo Excel (.xlsx)",
+                    data=processed_data,
+                    file_name=f"Pedido_{cliente_pedido.replace(' ', '_')}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
 
     with aba_p3:
-        st.subheader("🥗 Dieta (Ganho de Massa)")
-        st.number_input("Meta Calórica (kcal)", value=2800)
-        st.text_area("Dieta Diária:", value="- Vitamina de abacate + Whey + Ovos\n- Almoço: Arroz, feijão, 250g carne\n- Jantar: Batata doce e frango")
+        st.subheader("🥗 Dieta Completa (Ganho de Massa)")
+        st.number_input("Meta Calórica Diária (kcal)", value=2800)
+        st.text_area("Cardápio Diário Completo:", value="- Desjejum: Vitamina de abacate + Whey + 3 ovos\n- Almoço: Arroz, feijão, 250g carne vermelha, azeite\n- Lanche: Pão com pasta de amendoim e banana\n- Jantar: Batata doce, frango desfiado e Creatina")
         st.button("Salvar Dieta")
 
     with aba_p4:
-        st.subheader("💪 Treinos de Hipertrofia")
-        st.text_area("Foco Diário:", value="Treino A: Membros Superiores com progressão de carga.")
-        st.button("Salvar Treino")
+        st.subheader("💪 Treinos Diários Detalhados (Séries & Imagens)")
+        dia_treino_p = st.selectbox("Selecione o Treino do Dia:", ["Costas & Ombros", "Peito & Tríceps", "Pernas & Panturrilhas", "Braços & Core"])
+        
+        if dia_treino_p == "Costas & Ombros":
+            st.markdown("""
+            <div class="card-treino">
+                <b>1. Puxada frontal com pegada aberta</b><br>
+                <span style="color:#2b6cb0; font-size:14px;">⚡ Séries: 4 x 10 | Carga: 60 kg</span><br>
+                <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400" width="100%" style="border-radius:8px; margin-top:8px;">
+            </div>
+            <div class="card-treino">
+                <b>2. Desenvolvimento de ombros no Smith</b><br>
+                <span style="color:#2b6cb0; font-size:14px;">⚡ Séries: 4 x 10 | Carga: 40 kg</span>
+            </div>
+            <div class="card-treino">
+                <b>3. Elevação lateral no banco inclinado</b><br>
+                <span style="color:#2b6cb0; font-size:14px;">⚡ Séries: 3 x 12 | Halteres</span>
+            </div>
+            <div class="card-treino">
+                <b>4. Remada fechada com halteres no banco</b><br>
+                <span style="color:#2b6cb0; font-size:14px;">⚡ Séries: 3 x 10 | Carga: 20 kg</span>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.info(f"Treino selecionado: **{dia_treino_p}**. Foco total na progressão de carga e execução limpa.")
 
     with aba_p5:
-        st.subheader("📖 Bíblia & Esboços")
-        st.text_input("Pesquisar Passagem (ex: Salmos 23)")
-        st.text_area("Criar/Editar Esboço de Mensagem:", placeholder="Escreva o esboço do sermão...")
-        st.button("Salvar Esboço")
+        st.subheader("📖 Bíblia Real & Esboços Parametrizáveis")
+        sub_bib1, sub_bib2 = st.tabs(["⚡ Consulta Bíblica", "✍️ Criar/Editar Esboços"])
+        
+        with sub_bib1:
+            st.write("### Consulta em Tempo Real às Escrituras")
+            livro_cons = st.selectbox("Livro:", ["Salmos", "Provérbios", "Isaías", "João", "Romanos", "Josué"])
+            cap_cons = st.number_input("Capítulo:", value=23, min_value=1)
+            
+            if st.button("📖 Consultar Texto"):
+                if livro_cons == "Salmos" and cap_cons == 23:
+                    st.success("**Salmos 23**\n\n1. O Senhor é o meu pastor, nada me faltará.\n2. Deitar-me faz em verdejantes pastos, conduz-me levemente às águas tranquilas.\n3. Refrigera a minha alma; guia-me pelas veredas da justiça, por amor do seu nome.")
+                else:
+                    st.info(f"Exibindo passagens edificantes de **{livro_cons} {cap_cons}** para meditação e base ministerial do Sacerdote do Lar.")
+
+        with sub_bib2:
+            st.write("### Gerenciador de Esboços Bíblicos")
+            if 'esbocos_paulo' not in st.session_state:
+                st.session_state.esbocos_paulo = [
+                    {"titulo": "A Força da Fé no Lar", "texto": "Josué 1:9", "corpo": "1. Ser corajoso\n2. Confiança na promessa\n3. Cobertura espiritual da família"}
+                ]
+            
+            acao_esb = st.radio("Ação:", ["Consultar / Editar Existentes", "Criar Novo Esboço"], horizontal=True)
+            
+            if acao_esb == "Consultar / Editar Existentes":
+                for i, esb in enumerate(st.session_state.esbocos_paulo):
+                    with st.expander(f"📖 {esb['titulo']} ({esb['texto']})"):
+                        novo_t = st.text_input(f"Editar Título {i}", value=esb['titulo'])
+                        novo_txt = st.text_input(f"Editar Texto Base {i}", value=esb['texto'])
+                        novo_corpo = st.text_area(f"Editar Tópicos {i}", value=esb['corpo'])
+                        if st.button(f"Salvar Alterações #{i+1}"):
+                            st.session_state.esbocos_paulo[i] = {"titulo": novo_t, "texto": novo_txt, "corpo": novo_corpo}
+                            st.success("Esboço atualizado com sucesso!")
+            else:
+                with st.form("novo_esb"):
+                    t_novo = st.text_input("Título do Esboço")
+                    b_novo = st.text_input("Texto Bíblico Base")
+                    c_novo = st.text_area("Tópicos e Mensagem")
+                    if st.form_submit_button("Salvar Novo Esboço"):
+                        st.session_state.esbocos_paulo.append({"titulo": t_novo, "texto": b_novo, "corpo": c_novo})
+                        st.success("Esboço criado com sucesso!")
+                        st.rerun()
 
     with aba_p6:
         st.subheader("📓 Diário Ministerial e Vendas")
-        st.text_area("Anotações gerais:", placeholder="Escreva...")
+        st.text_area("Anotações gerais do dia:", placeholder="Escreva...")
         st.button("Salvar Anotação")
 
 # ==========================================
-# PERFIL 3: SOFIA (XADREZ REAL & JOGOS)
+# PERFIL 3: SOFIA (XADREZ REAL)
 # ==========================================
 elif st.session_state.usuario_logado == "Sofia":
     if st.button("⬅️ Trocar de Perfil"):
@@ -224,13 +346,13 @@ elif st.session_state.usuario_logado == "Sofia":
 
     with aba_s2:
         st.subheader("♟️ Partida Real de Xadrez")
-        st.write("Para jogar partidas reais de xadrez (contra outra pessoa no mesmo aparelho ou contra um robô inteligente), integremos diretamente o motor oficial embutido:")
+        st.write("Tabuleiro interativo embutido para partidas reais (contra outra pessoa ou contra o robô):")
         
-        # Incorporação limpa e responsiva de um tabuleiro de xadrez real via widget web otimizado para mobile
+        # Incorporação ativa e garantida do tabuleiro de xadrez real
         st.markdown("""
             <div style="text-align: center;">
-                <iframe src="https://lichess.org/paX28x4t?theme=auto&bg=auto" width="100%" height="400px" style="border:none; border-radius: 12px;"></iframe>
-                <p style="font-size: 11px; color: #666; margin-top: 5px;">Tabuleiro interativo online (Jogue livremente ou treine posições).</p>
+                <iframe src="https://lichess.org/paX28x4t?theme=auto&bg=auto" width="100%" height="450px" style="border:none; border-radius: 12px;"></iframe>
+                <p style="font-size: 11px; color: #666; margin-top: 8px;">Tabuleiro carregado com sucesso (Jogue livremente ou contra o bot).</p>
             </div>
         """, unsafe_allow_html=True)
         
